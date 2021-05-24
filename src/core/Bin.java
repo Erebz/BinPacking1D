@@ -47,4 +47,9 @@ public class Bin {
     public int getNbItems() {
         return items.size();
     }
+
+    @Override
+    public String toString() {
+        return items.size() + " items, ("+ capaciteActuelle() + "/" + taille +")";
+    }
 }

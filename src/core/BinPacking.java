@@ -5,12 +5,15 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class BinPacking {
+    private String nomProbleme;
+
     private List<Item> items;
     private List<Bin> bins;
 
     private int tailleBin;
 
     public BinPacking(){
+        nomProbleme = "Problème vide";
         tailleBin = 0;
         items = new ArrayList<Item>();
         bins = new ArrayList<Bin>();
@@ -18,12 +21,13 @@ public class BinPacking {
 
     public BinPacking(String filename){
         this();
+        this.nomProbleme = filename;
         this.initFromFile(filename);
     }
 
     private void initFromFile(String filename) {
         try {
-            File file = new File(filename);
+            File file = new File("./data/" + filename);
             Scanner reader = new Scanner(file);
             if(reader.hasNextLine()){
                 //Premiere ligne
@@ -59,6 +63,9 @@ public class BinPacking {
         Collections.sort(items);
     }
 
+    public int getNbBins(){
+        return bins.size();
+    }
 
 
 
@@ -88,15 +95,20 @@ public class BinPacking {
 
     @Override
     public String toString() {
-        String s =  "Données : " +
+        String s =  "[" + nomProbleme + "]\n" +
+                    "Données : " +
                     "nItems = " + items.size() +
-                    ", tailleBin = " + tailleBin +
-                    ", nBins = " + bins.size() + "\n";
-        s += "items : ";
+                    ", tailleBin = " + tailleBin + "\n";
+        /*s += "items : ";
         for(Item i : items){
             s += i.getTaille() + " ";
         }
-        s += "\nBorne inférieuere : " + this.getBorneInferieure();
+        s+="\n"*/
+        s += "Borne inférieuere : " + this.getBorneInferieure() + "\n";
+        //s += "nbBins = " + bins.size() + "\n";
+        /*for(Bin b : bins){
+            s += "- [" + b + "]\n";
+        }*/
         return s;
     }
 }
