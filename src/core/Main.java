@@ -20,13 +20,14 @@ public class Main {
 
         String data = "binpack1d_00.txt";
         BinPacking bp = new BinPacking(data);
+        PackingSolution solution;
         System.out.print(bp);
         System.out.print("> FirstFitDecreasing ... ");
-        bp.firstFitDecreasing();
-        System.out.println(bp.getNbBins() + "bins");
+        solution = bp.firstFitDecreasing();
+        System.out.println(solution.getNbBins() + "bins");
         System.out.print("> Résolution programmation linéaire ... ");
-        bp.linearProgrammingResolution();
-        System.out.println(bp.getNbBins() + "bins");
+        solution = bp.linearProgrammingResolution();
+        System.out.println(solution.getNbBins() + "bins");
         System.out.println("\n");
     }
 }

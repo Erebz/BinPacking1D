@@ -8,18 +8,13 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class BinPacking {
-    private String nomProbleme;
-
     private List<Item> items;
-    private List<Bin> bins;
-
     private int tailleBin;
+    private String nomProbleme;
 
     public BinPacking(){
         nomProbleme = "Problème vide";
-        tailleBin = 0;
-        items = new ArrayList<Item>();
-        bins = new ArrayList<Bin>();
+        this.items = new ArrayList<Item>();
     }
 
     public BinPacking(String filename){
@@ -36,13 +31,12 @@ public class BinPacking {
                 //Premiere ligne
                 String line = reader.nextLine();
                 String[] datas = line.split(" ");
-                this.tailleBin = Integer.parseInt(datas[0]);
+                tailleBin = Integer.parseInt(datas[0]);
             }
             while (reader.hasNextLine()) {
                 String line = reader.nextLine();
                 int taille = Integer.parseInt(line);
-                Item i = new Item(taille);
-                items.add(i);
+                this.items.add(new Item(taille));
             }
             reader.close();
         } catch (FileNotFoundException e) {
@@ -58,27 +52,16 @@ public class BinPacking {
         return (int) Math.ceil((double) borne / tailleBin);
     }
 
-    private void trierItemsDecroissant(){
-        Collections.sort(items, Collections.reverseOrder());
+    public void trierItemsDecroissant(){
+        items.sort(Collections.reverseOrder());
     }
 
-    private void trierItemsCroissant(){
-        Collections.sort(items);
-    }
-
-    public int getNbBins(){
-        return bins.size();
-    }
-
-    private void reset() {
-        bins.clear();
-    }
-
+    public void melangerItems(){ Collections.shuffle(items); }
 
     //Algorithmes de résolution
-    public void firstFitDecreasing(){
-        this.reset();
-        this.trierItemsDecroissant();
+    private PackingSolution firstFit(){
+        PackingSolution packingSolution = new PackingSolution();
+        List<Bin> bins = packingSolution.getBins();
         for(Item item : items){
             boolean stop = false;
             for (int i=0; i < bins.size() && !stop; i++){
@@ -96,11 +79,32 @@ public class BinPacking {
                 bins.add(bin);
             }
         }
+        return packingSolution;
     }
 
+    public PackingSolution firstFitDecreasing(){
+        this.trierItemsDecroissant();
+        return this.firstFit();
+    }
 
-    public void linearProgrammingResolution(){
-        this.reset();
+    public PackingSolution firstFitRandom(){
+        this.melangerItems();
+        return this.firstFit();
+    }
+
+    private PackingSolution genererUnItemParBin(){
+        PackingSolution packingSolution = new PackingSolution();
+        for(Item i : items){
+            Bin bin = new Bin(tailleBin);
+            bin.ajouterItem(i);
+            packingSolution.ajouterBin(bin);
+        }
+        return packingSolution;
+    }
+
+    public PackingSolution linearProgrammingResolution(){
+        PackingSolution packingSolution = new PackingSolution();
+        List<Bin> bins = packingSolution.getBins();
         int nbItems = items.size();
         int nbBinsMax = nbItems;
         Loader.loadNativeLibraries();
@@ -167,8 +171,8 @@ public class BinPacking {
             System.err.println("Pas de solution optimale.");
         }
 
+        return packingSolution;
     }
-
 
     @Override
     public String toString() {
@@ -182,10 +186,7 @@ public class BinPacking {
         }
         s+="\n"*/
         s += "Borne inférieuere : " + this.getBorneInferieure() + "\n";
-        //s += "nbBins = " + bins.size() + "\n";
-        /*for(Bin b : bins){
-            s += "- [" + b + "]\n";
-        }*/
         return s;
     }
+
 }
