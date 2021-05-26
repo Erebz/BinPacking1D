@@ -189,4 +189,7 @@ public class BinPacking {
         return s;
     }
 
+    public int getTailleBin() {
+        return tailleBin;
+    }
 }

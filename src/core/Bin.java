@@ -12,6 +12,13 @@ public class Bin {
         this.taille = taille;
     }
 
+    public Bin(Bin bin) {
+        this(bin.taille);
+        for(Item i : bin.items){
+            this.ajouterItem(i);
+        }
+    }
+
     public void ajouterItem(Item i){
         this.items.add(i);
     }
@@ -26,6 +33,10 @@ public class Bin {
 
     public boolean estPleine(){
         return this.capaciteActuelle() >= this.taille;
+    }
+
+    public boolean contient(Item i){
+        return items.contains(i);
     }
 
     private int capaciteRestante(){
@@ -46,6 +57,10 @@ public class Bin {
 
     public int getNbItems() {
         return items.size();
+    }
+
+    public List<Item> getItems(){
+        return this.items;
     }
 
     @Override
