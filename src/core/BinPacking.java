@@ -12,10 +12,12 @@ public class BinPacking {
     private List<Item> items;
     private int tailleBin;
     private String nomProbleme;
+    private StrategieVoisinage voisinage;
 
     public BinPacking(){
         nomProbleme = "Problème vide";
         this.items = new ArrayList<Item>();
+        this.voisinage = new StrategieDeplacer();
     }
 
     public BinPacking(String filename){
@@ -93,7 +95,7 @@ public class BinPacking {
         return this.firstFit();
     }
 
-    private PackingSolution genererUnItemParBin(){
+    private PackingSolution genererUnBinParItem(){
         PackingSolution packingSolution = new PackingSolution();
         for(Item i : items){
             Bin bin = new Bin(tailleBin);
@@ -110,7 +112,6 @@ public class BinPacking {
         int nbBinsMax = nbItems;
         Loader.loadNativeLibraries();
         MPSolver solver = MPSolver.createSolver("SCIP"); //GLOP, SCIP
-
         //Variables
         MPVariable[][] x = new MPVariable[nbItems][nbBinsMax];
         for (int i = 0; i < nbItems; i++) {
@@ -124,7 +125,6 @@ public class BinPacking {
             String s = "Y" + j;
             y[j] = solver.makeBoolVar(s);
         }
-
         //Contraintes
         //Pour chaque  item i : somme(j=1 à nbBinsMax)[Xij] = 1
         for (int i = 0; i < nbItems; i++) {
@@ -133,7 +133,6 @@ public class BinPacking {
                 c.setCoefficient(x[i][j], 1);
             }
         }
-
         //Pour chaque  bin j : somme(i=1 à nbItems)[Xij * Ti] <= TailleBinMax
         double infinity = Double.POSITIVE_INFINITY;
         for (int j = 0; j < nbBinsMax; j++) {
@@ -145,14 +144,12 @@ public class BinPacking {
                 constraint.setCoefficient(x[i][j], -items.get(i).getTaille());
             }
         }
-
         //Objectif
         MPObjective objective = solver.objective();
         for (int j = 0; j < nbBinsMax; j++) {
             objective.setCoefficient(y[j], 1);
         }
         objective.setMinimization();
-
         //Résolution
         final MPSolver.ResultStatus resultat = solver.solve();
         if (resultat == MPSolver.ResultStatus.OPTIMAL) {
@@ -171,8 +168,139 @@ public class BinPacking {
         } else {
             System.err.println("Pas de solution optimale.");
         }
-
         return packingSolution;
+    }
+
+    public PackingSolution recuitSimule(PackingSolution x0, double t0, int n1, int n2, double mu){
+        PackingSolution xMax = x0;
+        PackingSolution currentX = x0;
+        double t = t0;
+        double fMax = xMax.fitness();
+        for (int k = 0; k < n1; k++){
+            for (int l = 0; l < n2; l++){
+                //On choisit un voisin aléatoirement
+                PackingSolution newX = (voisinage.getVoisinage(currentX, 1)).get(0);
+                double newFitness = newX.fitness();
+                double delta =  newFitness - currentX.fitness(); //valeur absolue ?
+                if(delta >= 0){
+                    currentX = newX;
+                    if(newFitness > fMax){
+                        xMax = newX;
+                        fMax = newFitness;
+                    }
+                }else{
+                    double rand = Math.random();
+                    double proba = Math.exp(-delta/t);
+                    if(rand <= proba){
+                        currentX = newX;
+                    }
+                }
+            }
+            t *= mu;
+        }
+        return xMax;
+    }
+
+    public PackingSolution methodeTabou(PackingSolution x0, int tailleTabou, int maxIter){
+        PackingSolution xMax = x0;
+        PackingSolution currentX = x0;
+        List<Item> T = new LinkedList<>();
+        double fMax = xMax.fitness();
+        for (int i = 0 ; i < maxIter; i++){
+            List<PackingSolution> voisinage = this.voisinage.getVoisinage(currentX, 50000);
+            double maxFitness = 0;
+            PackingSolution bestVoisin = null;
+            for(PackingSolution sol : voisinage){
+                double f = sol.fitness();
+                if(f > maxFitness) { // + item pas dans tabu
+                    maxFitness = f;
+                    bestVoisin = sol;
+                }
+            }
+            //calcul delta
+            //si inferieur, ajouter item à T
+                //MAJ tabou
+            //current = bestVoisin
+            //maj best fitness et best solution
+        }
+        return xMax;
+    }
+
+    /*
+    public PackingSolution randomVoisin(PackingSolution x) {
+        List<Bin> bins = x.getBins();
+        Collections.shuffle(bins);
+
+        if (Math.random() < 0.5) {
+//            //Déplacer un Item
+//            for (int i = 0; i < bins.size(); i++) {
+//                Bin b1 = bins.get(i);
+//                List<Item> items = b1.getItems();
+//                Collections.shuffle(items);
+//                for (Item item : items) {
+//                    for (int j = 0; j < bins.size(); j++) {
+//                        Bin b2 = bins.get(j);
+//                        if (j != i && b2.peutAccueillir(item)) {
+//                            PackingSolution voisin = new PackingSolution(x);
+//                            voisin.deplacerItem(i, j, item);
+//                            return voisin;
+//                        }
+//                    }
+//                }
+                List<PackingSolution> voisins = voisinage.randomVoisin(x,1);
+                return voisins.get(0);
+            }
+
+        } else {
+            //Echanger deux items
+            for (int i = 0; i < bins.size(); i++) {
+                Bin b1 = bins.get(i);
+                List<Item> items = b1.getItems();
+                Collections.shuffle(items);
+                for (Item item : items) {
+                    for (int j = 0; j < bins.size(); j++) {
+                        Bin b2 = bins.get(j);
+                        if (j != i && b2.peutAccueillir(item)) {
+                            List<Item> items2 = b2.getItems();
+                            Collections.shuffle(items2);
+                            for (Item item2 : items2){
+                                if (b2.peutAccueillirSansItem(item,item2) && b1.peutAccueillirSansItem(item2,item)) {
+                                    PackingSolution voisin = new PackingSolution(x);
+                                    voisin.echangerItems(i,j,item,item2);
+                                    return voisin;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return x;
+    }*/
+
+    public boolean estValide(PackingSolution solution){
+        boolean estCorrect = true;
+        List<Bin> bins = solution.getBins();
+        //tous les items sont utilisés
+        for (Item item : items) {
+            boolean stop = false;
+            for (int j = 0; j < bins.size() && !stop; j++) {
+                Bin b = bins.get(j);
+                if (b.contient(item)) {
+                    stop = true;
+                }
+            }
+            if (!stop) estCorrect = false;
+        }
+        //toutes les bins sont valides
+        for (Bin bin : bins){
+            if(bin.capaciteActuelle() > tailleBin){
+                estCorrect = false;
+                System.out.println("Trop grande !!!!!! " + bin);
+            }
+        }
+        return estCorrect;
     }
 
     @Override

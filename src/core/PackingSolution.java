@@ -41,21 +41,11 @@ public class PackingSolution {
         return fitness;
     }
 
-    public boolean deplacerItem(Item item){
-        Collections.shuffle(this.bins);
-        boolean moved = false;
-        boolean removed = false;
-        for(int i = 0; i < bins.size() && (!moved || !removed); i++){
-            Bin b = bins.get(i);
-            if(b.contient(item)){
-                b.retirerItem(item);
-                removed = true;
-            }else if(b.peutAccueillir(item)){
-                b.ajouterItem(item);
-                moved = true;
-            }
-        }
-        return (moved && removed);
+    public void deplacerItem(int idOrigine, int idArrivee, Item item){
+        Bin origine = bins.get(idOrigine);
+        Bin arrivee = bins.get(idArrivee);
+        origine.retirerItem(item);
+        arrivee.ajouterItem(item);
     }
 
     public void echangerItems(int idBin1, int idBin2, Item item1, Item item2){
