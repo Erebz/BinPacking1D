@@ -58,8 +58,13 @@ public class PackingSolution {
         return (moved && removed);
     }
 
-    public void echangerItems(Item item1, Item item2){
-
+    public void echangerItems(int idBin1, int idBin2, Item item1, Item item2){
+        Bin b1 = bins.get(idBin1);
+        Bin b2 = bins.get(idBin2);
+        b1.retirerItem(item1);
+        b2.retirerItem(item2);
+        b1.ajouterItem(item2);
+        b2.ajouterItem(item1);
     }
 
 }

@@ -5,6 +5,7 @@ import com.google.ortools.linearsolver.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.Array;
 import java.util.*;
 
 public class BinPacking {
@@ -191,5 +192,9 @@ public class BinPacking {
 
     public int getTailleBin() {
         return tailleBin;
+    }
+
+    public void setVoisinage(StrategieVoisinage voisinage) {
+        this.voisinage = voisinage;
     }
 }

@@ -47,6 +47,10 @@ public class Bin {
         return i.getTaille() <= capaciteRestante();
     }
 
+    public boolean peutAccueillirSansItem(Item potentiel, Item acquis){
+        return potentiel.getTaille() <= capaciteRestante()+acquis.getTaille();
+    }
+
     public int capaciteActuelle() {
         int taille = 0;
         for(Item i : this.items){
