@@ -212,7 +212,7 @@ public class BinPacking {
             PackingSolution bestVoisin = null;
             for(PackingSolution sol : voisinage){
                 double f = sol.fitness();
-                if(f > maxFitness) { // + item pas dans tabu
+                if(f > maxFitness && !T.contains(t)) {
                     maxFitness = f;
                     bestVoisin = sol;
                 }

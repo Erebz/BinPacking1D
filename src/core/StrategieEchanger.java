@@ -25,7 +25,8 @@ public class StrategieEchanger implements StrategieVoisinage{
                             if (b2.peutAccueillirSansItem(item,item2) && b1.peutAccueillirSansItem(item2,item)) {
                                 PackingSolution voisin = new PackingSolution(x);
                                 voisin.echangerItems(i,j,item,item2);
-                                voisins.add(voisin);
+                                TransitionEchanger t = new TransitionEchanger(b1,b2,item,item2);
+                                voisins.put(t, voisin);
                                 nbVoisins ++;
                                 if(nbVoisins >= tailleVoisinage) return voisins;
                             }
@@ -34,7 +35,6 @@ public class StrategieEchanger implements StrategieVoisinage{
                 }
             }
         }
-        if(nbVoisins == 0) voisins.add(x);
         return voisins;
     }
 }

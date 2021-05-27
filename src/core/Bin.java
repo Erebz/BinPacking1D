@@ -75,4 +75,21 @@ public class Bin {
     public boolean estVide() {
         return capaciteActuelle() <= 0;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(items, taille);
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(!(o instanceof Bin)) return false;
+        if(this == o) return true;
+        Bin b = (Bin) o;
+        if(items.size() != b.items.size()) return false;
+        for(Item i : items){
+            if(!b.contient(i)) return false;
+        }
+        return items.equals(b.items);
+    }
 }

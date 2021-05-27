@@ -15,4 +15,16 @@ public class Item implements Comparable<Item>{
     public int compareTo(Item i) {
         return this.taille - i.getTaille();
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(taille);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof Item)) return false;
+        if(this == o) return true;
+        return this.taille == ((Item) o).getTaille();
+    }
 }

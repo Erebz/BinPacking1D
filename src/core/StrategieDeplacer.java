@@ -22,7 +22,8 @@ public class StrategieDeplacer implements StrategieVoisinage{
                     if (j != i && b2.peutAccueillir(item)) {
                         PackingSolution voisin = new PackingSolution(x);
                         voisin.deplacerItem(i, j, item);
-                        voisins.add(voisin);
+                        TransitionDeplacer t = new TransitionDeplacer(b1,b2,item);
+                        voisins.put(t, voisin);
                         nbVoisins ++;
                         if(nbVoisins >= tailleVoisinage) return voisins;
                     }
