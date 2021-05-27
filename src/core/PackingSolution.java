@@ -46,6 +46,7 @@ public class PackingSolution {
         Bin arrivee = bins.get(idArrivee);
         origine.retirerItem(item);
         arrivee.ajouterItem(item);
+        if(origine.estVide()) bins.remove(origine);
     }
 
     public void echangerItems(int idBin1, int idBin2, Item item1, Item item2){

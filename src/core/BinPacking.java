@@ -222,6 +222,15 @@ public class BinPacking {
                 //MAJ tabou
             //current = bestVoisin
             //maj best fitness et best solution
+
+            //TODO:
+            // - Coder l'interface Transition
+            // --> contient les informations propres à une transi
+            // --> strategie utilisée, bin de départ, arrivée, item utilisé...
+            // --> fonction de comparaison de transitions
+            // - définir equals de Bins & Item... bin=bin2 si même combinaison, item=item2 si meme taille...
+            // - retourner la transformation associée à chaque voisin
+
         }
         return xMax;
     }

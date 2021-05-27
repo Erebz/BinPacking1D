@@ -71,4 +71,8 @@ public class Bin {
     public String toString() {
         return items.size() + " items, ("+ capaciteActuelle() + "/" + taille +")";
     }
+
+    public boolean estVide() {
+        return capaciteActuelle() <= 0;
+    }
 }
