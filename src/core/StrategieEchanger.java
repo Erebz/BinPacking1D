@@ -1,13 +1,11 @@
 package core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class StrategieEchanger implements StrategieVoisinage{
     @Override
-    public List<PackingSolution> getVoisinage(PackingSolution x, int tailleVoisinage) {
-        List<PackingSolution> voisins = new ArrayList<PackingSolution>();
+    public Map<Transition, PackingSolution> getVoisinage(PackingSolution x, int tailleVoisinage) {
+        Map<Transition, PackingSolution> voisins = new HashMap<>();
         int nbVoisins = 0;
         List<Bin> bins = x.getBins();
         Collections.shuffle(bins);

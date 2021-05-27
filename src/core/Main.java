@@ -18,11 +18,12 @@ public class Main {
             System.out.println("\n");
         }*/
 
-        String data = "binpack1d_05.txt";
+        String data = "binpack1d_13.txt";
         BinPacking bp = new BinPacking(data);
         StrategieMultiple voisinage = new StrategieMultiple();
         voisinage.ajouterStrategie(new StrategieDeplacer());
         voisinage.ajouterStrategie(new StrategieEchanger());
+        //StrategieVoisinage voisinage = new StrategieDeplacer();
         bp.setVoisinage(voisinage);
         PackingSolution solution;
         System.out.print(bp);
@@ -33,9 +34,13 @@ public class Main {
         solution = bp.linearProgrammingResolution();
         System.out.println(solution.getNbBins() + "bins");*/
         System.out.print("> Recuit Simulé ... ");
-        solution = bp.recuitSimule(bp.firstFitRandom(), 4000, 100, 100, 0.75d);
+        solution = bp.recuitSimule(bp.genererUnBinParItem(), 4000, 100, 100, 0.95d);
         System.out.println(solution.getNbBins() + "bins");
-        System.out.println(">> correct ? " + bp.estValide(solution));
+        //System.out.println(">> correct ? " + bp.estValide(solution));
+        System.out.print("> Méthode Tabou ... ");
+        solution = bp.methodeTabou(bp.genererUnBinParItem(), 10, 5000, 200);
+        System.out.println(solution.getNbBins() + "bins");
+        //System.out.println(">> correct ? " + bp.estValide(solution));
         System.out.println("\n");
     }
 }

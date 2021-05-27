@@ -55,6 +55,14 @@ public class BinPacking {
         return (int) Math.ceil((double) borne / tailleBin);
     }
 
+    public int getTailleBin() {
+        return tailleBin;
+    }
+
+    public void setVoisinage(StrategieVoisinage voisinage) {
+        this.voisinage = voisinage;
+    }
+
     public void trierItemsDecroissant(){
         items.sort(Collections.reverseOrder());
     }
@@ -95,7 +103,7 @@ public class BinPacking {
         return this.firstFit();
     }
 
-    private PackingSolution genererUnBinParItem(){
+    public PackingSolution genererUnBinParItem(){
         PackingSolution packingSolution = new PackingSolution();
         for(Item i : items){
             Bin bin = new Bin(tailleBin);
@@ -179,7 +187,10 @@ public class BinPacking {
         for (int k = 0; k < n1; k++){
             for (int l = 0; l < n2; l++){
                 //On choisit un voisin aléatoirement
-                PackingSolution newX = (voisinage.getVoisinage(currentX, 1)).get(0);
+                Map<Transition, PackingSolution> voisins = voisinage.getVoisinage(currentX, 1);
+                if(voisins.size() == 0) return xMax;
+                Transition transition = (Transition) voisins.keySet().toArray()[0];
+                PackingSolution newX = voisins.get(transition);
                 double newFitness = newX.fitness();
                 double delta =  newFitness - currentX.fitness(); //valeur absolue ?
                 if(delta >= 0){
@@ -201,92 +212,41 @@ public class BinPacking {
         return xMax;
     }
 
-    public PackingSolution methodeTabou(PackingSolution x0, int tailleTabou, int maxIter){
+    public PackingSolution methodeTabou(PackingSolution x0, int tailleTabou, int maxIter, int tailleVoisinage){
         PackingSolution xMax = x0;
+        double fMax = x0.fitness();
         PackingSolution currentX = x0;
-        List<Item> T = new LinkedList<>();
-        double fMax = xMax.fitness();
+        LinkedList<Transition> T = new LinkedList<>();
         for (int i = 0 ; i < maxIter; i++){
-            List<PackingSolution> voisinage = this.voisinage.getVoisinage(currentX, 50000);
+            Map<Transition, PackingSolution> voisinage = this.voisinage.getVoisinage(currentX, tailleVoisinage);
             double maxFitness = 0;
             PackingSolution bestVoisin = null;
-            for(PackingSolution sol : voisinage){
+            Transition bestTransition = null;
+            for(Transition t : voisinage.keySet()){
+                PackingSolution sol = voisinage.get(t);
                 double f = sol.fitness();
                 if(f > maxFitness && !T.contains(t)) {
                     maxFitness = f;
                     bestVoisin = sol;
+                    bestTransition = t;
                 }
             }
-            //calcul delta
-            //si inferieur, ajouter item à T
-                //MAJ tabou
-            //current = bestVoisin
-            //maj best fitness et best solution
-
-            //TODO:
-            // - Coder l'interface Transition
-            // --> contient les informations propres à une transi
-            // --> strategie utilisée, bin de départ, arrivée, item utilisé...
-            // --> fonction de comparaison de transitions
-            // - définir equals de Bins & Item... bin=bin2 si même combinaison, item=item2 si meme taille...
-            // - retourner la transformation associée à chaque voisin
-
+            if(bestVoisin != null && bestTransition != null){
+                double delta = maxFitness - currentX.fitness();
+                if(delta >= 0){
+                    Transition transitionInverse = bestTransition.getInverse();
+                    if(transitionInverse != null) T.add(transitionInverse);
+                    if(T.size() >= tailleTabou) T.poll();
+                }
+                currentX = bestVoisin;
+                if(fMax < maxFitness){
+                    xMax = currentX;
+                    fMax = maxFitness;
+                }
+            }
         }
         return xMax;
     }
-
-    /*
-    public PackingSolution randomVoisin(PackingSolution x) {
-        List<Bin> bins = x.getBins();
-        Collections.shuffle(bins);
-
-        if (Math.random() < 0.5) {
-//            //Déplacer un Item
-//            for (int i = 0; i < bins.size(); i++) {
-//                Bin b1 = bins.get(i);
-//                List<Item> items = b1.getItems();
-//                Collections.shuffle(items);
-//                for (Item item : items) {
-//                    for (int j = 0; j < bins.size(); j++) {
-//                        Bin b2 = bins.get(j);
-//                        if (j != i && b2.peutAccueillir(item)) {
-//                            PackingSolution voisin = new PackingSolution(x);
-//                            voisin.deplacerItem(i, j, item);
-//                            return voisin;
-//                        }
-//                    }
-//                }
-                List<PackingSolution> voisins = voisinage.randomVoisin(x,1);
-                return voisins.get(0);
-            }
-
-        } else {
-            //Echanger deux items
-            for (int i = 0; i < bins.size(); i++) {
-                Bin b1 = bins.get(i);
-                List<Item> items = b1.getItems();
-                Collections.shuffle(items);
-                for (Item item : items) {
-                    for (int j = 0; j < bins.size(); j++) {
-                        Bin b2 = bins.get(j);
-                        if (j != i && b2.peutAccueillir(item)) {
-                            List<Item> items2 = b2.getItems();
-                            Collections.shuffle(items2);
-                            for (Item item2 : items2){
-                                if (b2.peutAccueillirSansItem(item,item2) && b1.peutAccueillirSansItem(item2,item)) {
-                                    PackingSolution voisin = new PackingSolution(x);
-                                    voisin.echangerItems(i,j,item,item2);
-                                    return voisin;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return x;
-    }*/
 
     public boolean estValide(PackingSolution solution){
         boolean estCorrect = true;
@@ -327,11 +287,4 @@ public class BinPacking {
         return s;
     }
 
-    public int getTailleBin() {
-        return tailleBin;
-    }
-
-    public void setVoisinage(StrategieVoisinage voisinage) {
-        this.voisinage = voisinage;
-    }
 }

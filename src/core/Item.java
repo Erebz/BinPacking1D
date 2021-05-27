@@ -1,5 +1,7 @@
 package core;
 
+import java.util.Objects;
+
 public class Item implements Comparable<Item>{
     private int taille;
 

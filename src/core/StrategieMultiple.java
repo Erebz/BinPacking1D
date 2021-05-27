@@ -1,9 +1,6 @@
 package core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class StrategieMultiple implements StrategieVoisinage{
 
@@ -18,23 +15,23 @@ public class StrategieMultiple implements StrategieVoisinage{
     }
 
     @Override
-    public List<PackingSolution> getVoisinage(PackingSolution x, int tailleVoisinage) {
+    public Map<Transition, PackingSolution> getVoisinage(PackingSolution x, int tailleVoisinage) {
         Random r = new Random();
         int nbStrat = strategies.size();
-        if(nbStrat == 0) return new ArrayList<PackingSolution>();
+        if(nbStrat == 0) return new HashMap<>();
 
         if(tailleVoisinage <= nbStrat){
             int idStrategie = r.nextInt(strategies.size());
             return strategies.get(idStrategie).getVoisinage(x, tailleVoisinage);
         }else{
-            List<PackingSolution> voisins = new ArrayList<>();
+            Map<Transition, PackingSolution> voisins = new HashMap<>();
             int tailleSousVoisinage = (int) Math.ceil((double) tailleVoisinage / nbStrat);
             for (int i = 0; i<nbStrat-1; i++){
-                List<PackingSolution> sousVoisinage = strategies.get(i).getVoisinage(x, tailleSousVoisinage);
-                voisins.addAll(sousVoisinage);
+                Map<Transition, PackingSolution> sousVoisinage = strategies.get(i).getVoisinage(x, tailleSousVoisinage);
+                voisins.putAll(sousVoisinage);
             }
-            List<PackingSolution> sousVoisinage = strategies.get(nbStrat).getVoisinage(x, (tailleVoisinage % nbStrat));
-            voisins.addAll(sousVoisinage);
+            Map<Transition, PackingSolution> sousVoisinage = strategies.get(nbStrat-1).getVoisinage(x, (tailleVoisinage % nbStrat));
+            voisins.putAll(sousVoisinage);
 
             return voisins;
         }
