@@ -41,21 +41,23 @@ public class PackingSolution {
         return fitness;
     }
 
-    public void deplacerItem(int idOrigine, int idArrivee, Item item){
+    public Bin[] deplacerItem(int idOrigine, int idArrivee, Item item){
         Bin origine = bins.get(idOrigine);
         Bin arrivee = bins.get(idArrivee);
         origine.retirerItem(item);
         arrivee.ajouterItem(item);
         if(origine.estVide()) bins.remove(origine);
+        return new Bin[]{origine, arrivee};
     }
 
-    public void echangerItems(int idBin1, int idBin2, Item item1, Item item2){
+    public Bin[] echangerItems(int idBin1, int idBin2, Item item1, Item item2){
         Bin b1 = bins.get(idBin1);
         Bin b2 = bins.get(idBin2);
         b1.retirerItem(item1);
         b2.retirerItem(item2);
         b1.ajouterItem(item2);
         b2.ajouterItem(item1);
+        return new Bin[]{b1, b2};
     }
 
 }

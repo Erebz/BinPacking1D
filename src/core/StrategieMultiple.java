@@ -26,12 +26,12 @@ public class StrategieMultiple implements StrategieVoisinage{
         }else{
             Map<Transition, PackingSolution> voisins = new HashMap<>();
             int tailleSousVoisinage = (int) Math.ceil((double) tailleVoisinage / nbStrat);
-            for (int i = 0; i<nbStrat-1; i++){
+            for (int i = 0; i<nbStrat; i++){
                 Map<Transition, PackingSolution> sousVoisinage = strategies.get(i).getVoisinage(x, tailleSousVoisinage);
                 voisins.putAll(sousVoisinage);
             }
-            Map<Transition, PackingSolution> sousVoisinage = strategies.get(nbStrat-1).getVoisinage(x, (tailleVoisinage % nbStrat));
-            voisins.putAll(sousVoisinage);
+            //Map<Transition, PackingSolution> sousVoisinage = strategies.get(nbStrat-1).getVoisinage(x, (tailleVoisinage % nbStrat));
+            //voisins.putAll(sousVoisinage);
 
             return voisins;
         }

@@ -3,9 +3,11 @@ package core;
 import com.google.ortools.Loader;
 import com.google.ortools.linearsolver.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.Array;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class BinPacking {
@@ -179,36 +181,45 @@ public class BinPacking {
         return packingSolution;
     }
 
-    public PackingSolution recuitSimule(PackingSolution x0, double t0, int n1, int n2, double mu){
+    public PackingSolution recuitSimule(PackingSolution x0, double t0, int n1, int n2, double mu) throws IOException {
+        FileWriter writer = new FileWriter("./analyseRecuit.csv");
+        BufferedWriter bw = new BufferedWriter(writer);
+        int nbI = 0;
+
         PackingSolution xMax = x0;
         PackingSolution currentX = x0;
         double t = t0;
         double fMax = xMax.fitness();
         for (int k = 0; k < n1; k++){
             for (int l = 0; l < n2; l++){
+                nbI++;
                 //On choisit un voisin aléatoirement
                 Map<Transition, PackingSolution> voisins = voisinage.getVoisinage(currentX, 1);
-                if(voisins.size() == 0) return xMax;
-                Transition transition = (Transition) voisins.keySet().toArray()[0];
-                PackingSolution newX = voisins.get(transition);
-                double newFitness = newX.fitness();
-                double delta =  newFitness - currentX.fitness(); //valeur absolue ?
-                if(delta >= 0){
-                    currentX = newX;
-                    if(newFitness > fMax){
-                        xMax = newX;
-                        fMax = newFitness;
-                    }
-                }else{
-                    double rand = Math.random();
-                    double proba = Math.exp(-delta/t);
-                    if(rand <= proba){
+                if(voisins.size() != 0){
+                    Transition transition = (Transition) voisins.keySet().toArray()[0];
+                    PackingSolution newX = voisins.get(transition);
+                    double newFitness = newX.fitness();
+                    double delta =  newFitness - currentX.fitness();
+                    if(delta >= 0){
                         currentX = newX;
+                        if(newFitness > fMax){
+                            xMax = newX;
+                            fMax = newFitness;
+                        }
+                    }else{
+                        double rand = Math.random();
+                        double proba = Math.exp(delta/t);
+                        if(rand <= proba){
+                            currentX = newX;
+                        }
                     }
                 }
+                bw.write(""+ nbI +";"+currentX.fitness()+";\n");;
             }
             t *= mu;
         }
+        bw.close();
+        writer.close();
         return xMax;
     }
 
@@ -233,10 +244,10 @@ public class BinPacking {
             }
             if(bestVoisin != null && bestTransition != null){
                 double delta = maxFitness - currentX.fitness();
-                if(delta >= 0){
+                if(delta <= 0){
                     Transition transitionInverse = bestTransition.getInverse();
                     if(transitionInverse != null) T.add(transitionInverse);
-                    if(T.size() >= tailleTabou) T.poll();
+                    if(T.size() > tailleTabou) T.poll();
                 }
                 currentX = bestVoisin;
                 if(fMax < maxFitness){
@@ -283,7 +294,7 @@ public class BinPacking {
             s += i.getTaille() + " ";
         }
         s+="\n"*/
-        s += "Borne inférieuere : " + this.getBorneInferieure() + "\n";
+        s += "Borne inférieure : " + this.getBorneInferieure() + "\n";
         return s;
     }
 

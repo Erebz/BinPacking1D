@@ -1,0 +1,14 @@
+;FFD;RS (FFR);RS (1PB);MT (FFR);MT (1PB)
+binpack1d_00.txt;1;5;2;119;93;
+binpack1d_01.txt;2;125;95;1283;2668;
+binpack1d_02.txt;3;181;160;5408;5942;
+binpack1d_03.txt;0;0;10;72;116;
+binpack1d_04.txt;0;48;42;276;347;
+binpack1d_05.txt;0;73;72;1116;1409;
+binpack1d_06.txt;1;2;138;4277;5157;
+binpack1d_11.txt;0;5;2;301;165;
+binpack1d_12.txt;0;1;0;290;333;
+binpack1d_13.txt;0;180;220;9814;12719;
+binpack1d_14.txt;1;1;171;5487;6168;
+binpack1d_21.txt;0;27;25;827;901;
+binpack1d_31.txt;0;58;54;2866;2702;

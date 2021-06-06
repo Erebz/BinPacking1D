@@ -6,23 +6,21 @@ public class TransitionEchanger implements Transition{
     private Bin arrivee;
     private Item itemDepart;
     private Item itemArrivee;
+    private Bin newDepart;
+    private Bin newArrivee;
 
-    public TransitionEchanger( Bin depart, Bin arrivee, Item itemDepart, Item itemArrivee ){
+    public TransitionEchanger(Bin depart, Bin arrivee, Item itemDepart, Item itemArrivee, Bin newDepart, Bin newArrivee){
         this.depart = depart;
         this.arrivee = arrivee;
         this.itemDepart = itemDepart;
         this.itemArrivee = itemArrivee;
+        this.newDepart = newDepart;
+        this.newArrivee = newArrivee;
     }
 
     @Override
     public Transition getInverse() {
-        Bin newDepart = new Bin(depart);
-        Bin newArrivee = new Bin(arrivee);
-        newDepart.retirerItem(itemDepart);
-        newDepart.ajouterItem(itemArrivee);
-        newArrivee.retirerItem(itemArrivee);
-        newArrivee.ajouterItem(itemDepart);
-        return new TransitionEchanger(newArrivee, newDepart, itemArrivee, itemDepart);
+        return new TransitionEchanger(newArrivee, newArrivee, itemArrivee, itemDepart, arrivee, depart);
     }
 
     @Override
@@ -30,8 +28,12 @@ public class TransitionEchanger implements Transition{
         if(!(o instanceof TransitionEchanger)) return false;
         if(this == o) return true;
         TransitionEchanger t = (TransitionEchanger) o;
-        boolean sens1 = depart.equals(t.depart) && arrivee.equals(t.arrivee) && itemArrivee.equals(t.itemArrivee) && itemDepart.equals(t.itemDepart);
-        boolean sens2 = arrivee.equals(t.depart) && depart.equals(t.arrivee) && itemDepart.equals(t.itemArrivee) && itemArrivee.equals(t.itemDepart);
+        boolean sens1 = depart.equals(t.depart) && arrivee.equals(t.arrivee)
+                && itemArrivee.equals(t.itemArrivee) && itemDepart.equals(t.itemDepart)
+                && newDepart.equals(t.newDepart) && newArrivee.equals(t.newArrivee);
+        boolean sens2 = arrivee.equals(t.depart) && depart.equals(t.arrivee)
+                && itemDepart.equals(t.itemArrivee) && itemArrivee.equals(t.itemDepart)
+                && newDepart.equals(t.newArrivee) && newArrivee.equals(t.newDepart);
         return sens1 || sens2;
     }
 }

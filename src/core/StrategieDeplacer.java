@@ -15,16 +15,29 @@ public class StrategieDeplacer implements StrategieVoisinage{
             List<Item> items = b1.getItems();
             Collections.shuffle(items);
             for (Item item : items) {
-                for (int j = 0; j < bins.size(); j++) {
+                boolean moved = false;
+                for (int j = 0; j < bins.size() && !moved; j++) {
                     Bin b2 = bins.get(j);
                     if (j != i && b2.peutAccueillir(item)) {
                         PackingSolution voisin = new PackingSolution(x);
-                        voisin.deplacerItem(i, j, item);
-                        TransitionDeplacer t = new TransitionDeplacer(b1,b2,item);
+                        Bin[] newBins = voisin.deplacerItem(i, j, item);
+                        TransitionDeplacer t = new TransitionDeplacer(b1,b2,item,newBins[0],newBins[1]);
                         voisins.put(t, voisin);
                         nbVoisins ++;
                         if(nbVoisins >= tailleVoisinage) return voisins;
+                        moved = true;
                     }
+                }
+                if(!moved){
+                    int taille = bins.get(0).getTaille();
+                    Bin b2 = new Bin(taille);
+                    PackingSolution voisin = new PackingSolution(x);
+                    voisin.ajouterBin(b2);
+                    Bin[] newBins = voisin.deplacerItem(i, voisin.getNbBins()-1, item);
+                    TransitionDeplacer t = new TransitionDeplacer(b1,b2,item,newBins[0],newBins[1]);
+                    voisins.put(t, voisin);
+                    nbVoisins ++;
+                    if(nbVoisins >= tailleVoisinage) return voisins;
                 }
             }
         }

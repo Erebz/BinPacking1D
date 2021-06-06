@@ -5,19 +5,19 @@ public class TransitionDeplacer implements Transition {
     private Bin depart;
     private Bin arrivee;
     private Item item;
+    private Bin newDepart;
+    private Bin newArrivee;
 
-    public TransitionDeplacer(Bin depart, Bin arrivee, Item item){
+    public TransitionDeplacer(Bin depart, Bin arrivee, Item item, Bin newDepart, Bin newArrivee){
         this.depart = depart;
         this.arrivee = arrivee;
         this.item = item;
+        this.newDepart = newDepart;
+        this.newArrivee = newArrivee;
     }
 
     public TransitionDeplacer getInverse(){
-        Bin newDepart = new Bin(depart);
-        Bin newArrivee = new Bin(arrivee);
-        newDepart.retirerItem(item);
-        newArrivee.ajouterItem(item);
-        return new TransitionDeplacer(newArrivee, newDepart, item);
+        return new TransitionDeplacer(newArrivee, newDepart, item, arrivee, depart);
     }
 
     @Override
@@ -25,6 +25,7 @@ public class TransitionDeplacer implements Transition {
         if(!(o instanceof TransitionDeplacer)) return false;
         if(this == o) return true;
         TransitionDeplacer t = (TransitionDeplacer) o;
-        return depart.equals(t.depart) && arrivee.equals(t.arrivee) && item.equals(t.item);
+        return depart.equals(t.depart) && arrivee.equals(t.arrivee) && item.equals(t.item)
+                && newDepart.equals(t.newDepart) && newArrivee.equals(t.newArrivee);
     }
 }

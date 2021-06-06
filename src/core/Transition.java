@@ -1,8 +1,8 @@
 package core;
 
 public interface Transition {
-    public Transition getInverse();
+    public abstract Transition getInverse();
 
     @Override
-    public boolean equals(Object o);
+    public abstract boolean equals(Object o);
 }

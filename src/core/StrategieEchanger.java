@@ -14,24 +14,31 @@ public class StrategieEchanger implements StrategieVoisinage{
             List<Item> items = b1.getItems();
             Collections.shuffle(items);
             for (Item item : items) {
-                for (int j = 0; j < bins.size(); j++) {
+                boolean swaped = false;
+                for (int j = 0; j < bins.size() && !swaped; j++) {
                     Bin b2 = bins.get(j);
-                    if (j != i && b2.peutAccueillir(item)) {
+                    if (j != i) {
                         List<Item> items2 = b2.getItems();
                         Collections.shuffle(items2);
                         for (Item item2 : items2){
-                            if (b2.peutAccueillirSansItem(item,item2) && b1.peutAccueillirSansItem(item2,item)) {
-                                PackingSolution voisin = new PackingSolution(x);
-                                voisin.echangerItems(i,j,item,item2);
-                                TransitionEchanger t = new TransitionEchanger(b1,b2,item,item2);
-                                voisins.put(t, voisin);
-                                nbVoisins ++;
-                                if(nbVoisins >= tailleVoisinage) return voisins;
+                            if(!swaped){
+                                if (b2.peutEchanger(item2,item) && b1.peutEchanger(item,item2)) {
+                                    PackingSolution voisin = new PackingSolution(x);
+                                    Bin[] newBins = voisin.echangerItems(i,j,item,item2);
+                                    TransitionEchanger t = new TransitionEchanger(b1,b2,item,item2,newBins[0],newBins[1]);
+                                    voisins.put(t, voisin);
+                                    nbVoisins ++;
+                                    if(nbVoisins >= tailleVoisinage) return voisins;
+                                    swaped = true;
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+        if(voisins.size() == 0){
+            System.out.println("???");
         }
         return voisins;
     }

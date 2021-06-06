@@ -7,6 +7,7 @@ import java.util.Objects;
 
 public class Bin {
     private List<Item> items;
+
     private int taille;
 
     public Bin(int taille){
@@ -49,8 +50,9 @@ public class Bin {
         return i.getTaille() <= capaciteRestante();
     }
 
-    public boolean peutAccueillirSansItem(Item potentiel, Item acquis){
-        return potentiel.getTaille() <= capaciteRestante()+acquis.getTaille();
+    public boolean peutEchanger(Item origine, Item nouveau){
+        return (capaciteActuelle() - origine.getTaille() + nouveau.getTaille()) <= taille;
+        //return potentiel.getTaille() <= capaciteRestante()-possede.getTaille();
     }
 
     public int capaciteActuelle() {
@@ -76,6 +78,10 @@ public class Bin {
 
     public boolean estVide() {
         return capaciteActuelle() <= 0;
+    }
+
+    public int getTaille() {
+        return taille;
     }
 
     @Override
