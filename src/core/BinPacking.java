@@ -192,7 +192,6 @@ public class BinPacking {
         double fMax = xMax.fitness();
         for (int k = 0; k < n1; k++){
             for (int l = 0; l < n2; l++){
-                nbI++;
                 //On choisit un voisin aléatoirement
                 Map<Transition, PackingSolution> voisins = voisinage.getVoisinage(currentX, 1);
                 if(voisins.size() != 0){
@@ -214,7 +213,7 @@ public class BinPacking {
                         }
                     }
                 }
-                bw.write(""+ nbI +";"+currentX.fitness()+";\n");;
+                bw.write(""+ nbI++ +";"+currentX.fitness()+";\n");;
             }
             t *= mu;
         }
@@ -223,7 +222,10 @@ public class BinPacking {
         return xMax;
     }
 
-    public PackingSolution methodeTabou(PackingSolution x0, int tailleTabou, int maxIter, int tailleVoisinage){
+    public PackingSolution methodeTabou(PackingSolution x0, int tailleTabou, int maxIter, int tailleVoisinage) throws IOException {
+        FileWriter writer = new FileWriter("./analyseTabou.csv");
+        BufferedWriter bw = new BufferedWriter(writer);
+
         PackingSolution xMax = x0;
         double fMax = x0.fitness();
         PackingSolution currentX = x0;
@@ -231,6 +233,7 @@ public class BinPacking {
         for (int i = 0 ; i < maxIter; i++){
             Map<Transition, PackingSolution> voisinage = this.voisinage.getVoisinage(currentX, tailleVoisinage);
             double maxFitness = 0;
+            //System.out.println(voisinage.size());
             PackingSolution bestVoisin = null;
             Transition bestTransition = null;
             for(Transition t : voisinage.keySet()){
@@ -244,7 +247,7 @@ public class BinPacking {
             }
             if(bestVoisin != null && bestTransition != null){
                 double delta = maxFitness - currentX.fitness();
-                if(delta <= 0){
+                if(delta < 0){
                     Transition transitionInverse = bestTransition.getInverse();
                     if(transitionInverse != null) T.add(transitionInverse);
                     if(T.size() > tailleTabou) T.poll();
@@ -255,7 +258,10 @@ public class BinPacking {
                     fMax = maxFitness;
                 }
             }
+            bw.write(""+ i +";"+currentX.fitness()+";\n");;
         }
+        bw.close();
+        writer.close();
         return xMax;
     }
 
@@ -298,4 +304,7 @@ public class BinPacking {
         return s;
     }
 
+    public int getNbItems() {
+        return this.items.size();
+    }
 }

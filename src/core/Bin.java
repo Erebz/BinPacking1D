@@ -73,7 +73,13 @@ public class Bin {
 
     @Override
     public String toString() {
-        return items.size() + " items, ("+ capaciteActuelle() + "/" + taille +")";
+        //return items.size() + " items, ("+ capaciteActuelle() + "/" + taille +")";
+        String s = "[";
+        for(Item i : items){
+            s += i.getTaille() + " ";
+        }
+        s += "]";
+        return s;
     }
 
     public boolean estVide() {

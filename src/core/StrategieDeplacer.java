@@ -16,7 +16,7 @@ public class StrategieDeplacer implements StrategieVoisinage{
             Collections.shuffle(items);
             for (Item item : items) {
                 boolean moved = false;
-                for (int j = 0; j < bins.size() && !moved; j++) {
+                for (int j = 0; j < bins.size(); j++) {
                     Bin b2 = bins.get(j);
                     if (j != i && b2.peutAccueillir(item)) {
                         PackingSolution voisin = new PackingSolution(x);
